@@ -54,6 +54,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+// Added this to remove Access-Control-Origin error in web.
+app.UseCors(x => x
+     .AllowAnyOrigin()
+     .AllowAnyMethod()
+     .AllowAnyHeader());
+
 app.UseAuthentication();
 app.UseAuthorization();
 

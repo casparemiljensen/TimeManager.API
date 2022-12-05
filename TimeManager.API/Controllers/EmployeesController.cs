@@ -25,7 +25,6 @@ namespace TimeManager.API.Controllers
 
         // GET: api/Employees
         [HttpGet]
-        [Authorize(Roles = "Manager")]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee()
         {
             return await _context.Employee.ToListAsync();

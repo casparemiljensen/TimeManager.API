@@ -124,9 +124,10 @@ namespace TimeManager.API.Controllers
 
         [HttpGet]
         [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
-        public IActionResult GetUser(string email)
+        public Task<User> GetUser(string email)
         {
-            return Ok(_userManager.FindByEmailAsync(email));
+            return _userManager.FindByEmailAsync(email);
+            //CHanged this from return ok and return type of ActionResult
         }
 
     }
