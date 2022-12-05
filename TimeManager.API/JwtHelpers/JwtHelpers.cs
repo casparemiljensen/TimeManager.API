@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using TimeManager.API.Models;
@@ -6,12 +7,15 @@ namespace TimeManager.API.JwtHelpers
 {
     public static class JwtHelpers
     {
-        public static IEnumerable<Claim> GetClaims(this UserTokens userAccounts, Guid Id)
+
+        public static IEnumerable<Claim> GetClaims(UserTokens userAccounts, Guid Id)
         {
-            IEnumerable<Claim> claims = new Claim[] {
+
+                IEnumerable<Claim> claims = new Claim[] {
                 new Claim("Id", userAccounts.Id.ToString()),
                     new Claim(ClaimTypes.Name, userAccounts.UserName),
                     new Claim(ClaimTypes.Email, userAccounts.EmailId),
+                    new Claim(ClaimTypes.Role, userAccounts.Roles.First()),
                     new Claim(ClaimTypes.NameIdentifier, Id.ToString()),
                     new Claim(ClaimTypes.Expiration, DateTime.UtcNow.AddDays(1).ToString("MMM ddd dd yyyy HH:mm:ss tt"))
             };

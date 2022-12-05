@@ -25,6 +25,33 @@ namespace TimeManager.API.Controllers
         }
 
         [HttpPost]
+        public IActionResult GetRoles(string userName)
+        {
+            if(userName != null)
+            {
+                var user = _userManager.FindByNameAsync(userName).Result;
+
+                var response = _userManager.GetRolesAsync(_userManager.FindByNameAsync(userName).Result);
+                if (response.Result.Count > 0)
+                {
+                    string s = "";
+                    foreach (var i in response.Result)
+                    {
+                        s += i;
+                    }
+                    return Ok("Found roles!: " + s);
+                }
+                    
+                else
+                {
+                    return BadRequest(response);
+                }
+            }
+            return BadRequest("No input params");
+        }
+
+
+        [HttpPost]
         public IActionResult CreateRole(string roleName)
         {
             var role = new Role
@@ -89,13 +116,15 @@ namespace TimeManager.API.Controllers
                 var Token = new UserTokens();
                 var user = await _userManager.FindByEmailAsync(userLogins.Email);
 
+                var userRolesResponse = await _userManager.GetRolesAsync(_userManager.FindByIdAsync(user.Id).Result);
+                List<string> userRoles = userRolesResponse.ToList();
+
                 if (user != null)
                 {
                     PasswordHasher<User> hasher = new PasswordHasher<User>();
                     var correctPassword = hasher.VerifyHashedPassword(user,user.PasswordHash,userLogins.Password);
                     
                     if(correctPassword.HasFlag(PasswordVerificationResult.Success))
-                    
                     {
                         Token = JwtHelpers.JwtHelpers.GenTokenkey(new UserTokens()
                         {
@@ -103,6 +132,7 @@ namespace TimeManager.API.Controllers
                             GuidId = Guid.NewGuid(),
                             UserName = user.UserName,
                             Id = user.Id,
+                            Roles = userRoles,
                         }, _jwtSettings);
                     }
                 }
@@ -122,11 +152,21 @@ namespace TimeManager.API.Controllers
         /// </summary>
         /// <returns>List Of UserAccounts</returns>
 
+
+        // Test method for roles
+
         [HttpGet]
-        [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
+        //[Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles = "Manager")]
         public Task<User> GetUser(string email)
         {
-            return _userManager.FindByEmailAsync(email);
+            var user = _userManager.FindByEmailAsync(email);
+
+            foreach(var i in _roleManager.Roles)
+            {
+                Console.WriteLine(i);
+            }
+            return user;
             //CHanged this from return ok and return type of ActionResult
         }
 
