@@ -16,5 +16,7 @@ namespace TimeManager.API.Data
         }
 
         public DbSet<TimeManager.API.Models.Employee> Employee { get; set; }
+
+        public DbSet<TimeManager.API.Models.Timeregistration> Timeregistration { get; set; }
     }
 }
